@@ -1,57 +1,90 @@
-# Laboratoire JNI : Fondamentaux du Développement Natif Android
+# 🚀 JNI Mastery: Foundational Native Development
 
-## Objectifs Pédagogiques
-Ce laboratoire permet d'apprendre à intégrer du code natif **C++** dans une application **Android** via **JNI** (Java Native Interface). Les points clés abordés sont :
-* Configuration de **CMake** dans Android Studio.
-* Passage de paramètres simples (entiers) et complexes (chaînes de caractères, tableaux).
-* Utilisation de la bibliothèque de **log native** (`__android_log_print`).
-* Manipulation de la mémoire JNI (Get/Release).
+<p align="center">
+  <img src="https://img.shields.io/badge/Platform-Android-brightgreen.svg" alt="Android">
+  <img src="https://img.shields.io/badge/Language-Java%20%7C%20C%2B%2B-blue.svg" alt="Languages">
+  <img src="https://img.shields.io/badge/Build-CMake-orange.svg" alt="CMake">
+  <img src="https://img.shields.io/badge/Security-Obfuscation-red.svg" alt="Security">
+</p>
 
----
-
-## 1. Architecture du Projet
-Le projet est structuré autour d'une interface Java (`MainActivity.java`) qui communique avec une bibliothèque partagée (`libnative-lib.so`) compilée à partir de `native-lib.cpp`.
-
-### Structure des fichiers clés :
-* `app/src/main/cpp/native-lib.cpp` : Implémentation des fonctions en C++.
-* `app/src/main/cpp/CMakeLists.txt` : Script de configuration pour la compilation.
-* `MainActivity.java` : Déclaration des méthodes `native` et interface utilisateur.
+## 📝 Rapport de Laboratoire - JNI Foundations
+Ce projet explore l'intégration bas-niveau sous Android. L'objectif est de maîtriser la communication bidirectionnelle entre le **Bytecode Java** et le **Code Machine Natif** via l'interface **JNI** (Java Native Interface).
 
 ---
 
-## 2. Implémentations Natives (C++)
+## 🏗️ Architecture du Système
 
-Nous avons implémenté quatre fonctionnalités majeures en natif :
+Le diagramme suivant illustre le flux de données entre les couches de l'application :
 
-1. **Hello World JNI** : Retourne une chaîne simple.
-2. **Calcul de Factoriel** : Calcul itératif avec vérification d'overflow.
-3. **Inversion de Chaîne** : Utilise `std::reverse` après conversion JNI.
-4. **Somme de Tableau** : Parcourt un `jintArray` pour calculer la somme des éléments.
-
----
-
-## 3. Captures d'Écran et Validation
-
-### Résultat de l'Application
-L'interface affiche les retours synchrones des appels JNI :
-
-![Interface Application](./1.png)
-
-### Logs Natifs (Logcat)
-On peut observer dans Logcat (filtre `JNI_DEMO`) les traces générées directement par le C++ :
-
-![Logcat JNI](./2.png)
-
-### Structure du Projet
-Preuve de la bonne organisation du module natif :
-
-![Structure Projet](./3.png)
+```mermaid
+graph TD
+    A[MainActivity.java] -- "1. native call" --> B(JNI Bridge)
+    B -- "2. Native Implementation" --> C[libnative-lib.so]
+    C -- "3. System Interaction (LOG)" --> D[Android Logcat]
+    C -- "4. Result Return" --> B
+    B -- "5. UI Update" --> A
+```
 
 ---
 
-## 4. Conclusion
-Ce TP démontre la puissance du NDK pour déporter des traitements logiques ou mathématiques vers une couche native performante tout en conservant une interface utilisateur Java fluide.
+## 🛠️ Fonctionnalités Implémentées
+
+| Fonctionnalité | Signature Native | Description |
+| :--- | :--- | :--- |
+| **Hello JNI** | `helloFromJNI()` | Initialisation et test de connectivité. |
+| **Factoriel** | `factorial(int n)` | Algorithme itératif avec gestion des types `long long` et détection d'overflow. |
+| **Inverse String** | `reverseString(String s)` | Manipulation de pointeurs JNI et utilisation de `std::reverse`. |
+| **Somme Tableau** | `sumArray(int[] arr)` | Accès direct aux régions mémoire des tableaux Java. |
 
 ---
-**Étudiant :** Mahmoud
-**Dépôt :** [dev_mobile_lab22](https://github.com/LaasriMahmoud/dev_mobile_lab22.git)
+
+## 🔍 Analyse du Code Critique
+
+### 1. Gestion des Chaînes (Memory Safety)
+Pour transformer une `String` Java en `const char*` C++, nous utilisons `GetStringUTFChars`. **Important** : Il faut impérativement libérer cette mémoire avec `ReleaseStringUTFChars` pour éviter les fuites mémoire dans le tas natif.
+
+```cpp
+const char* chars = env->GetStringUTFChars(javaString, nullptr);
+std::string s(chars);
+env->ReleaseStringUTFChars(javaString, chars); // Libération critique
+```
+
+### 2. Manipulation de Tableaux
+L'accès aux éléments d'un tableau (`jintArray`) se fait via `GetIntArrayElements`, permettant un parcours mémoire ultra-performant.
+
+---
+
+## 📸 Preuves de Fonctionnement (Proof of Work)
+
+### ✅ Interface Utilisateur
+L'application exécute les calculs en temps réel et affiche les résultats retournés par la bibliothèque `.so`.
+
+![App Screenshot](./1.png)
+
+### 📊 Flux de Sortie (Logcat)
+Traces d'exécution capturées directement depuis la couche native :
+
+![Logcat Output](./2.png)
+
+### 📁 Structure Interne
+Organisation modulaire respectant les standards NDK/CMake.
+
+![Project Structure](./3.png)
+
+---
+
+## 🚀 Comment Compiler et Déployer
+1. **Prérequis** : Android Studio Flamingo+, NDK (Side-by-side), CMake.
+2. **Import** : Importer le dossier en sélectionnant `build.gradle`.
+3. **Synchronisation** : Attendre la fin du Gradle Sync.
+4. **Execution** : `Shift + F10` pour lancer sur émulateur ou appareil physique.
+
+---
+
+> [!TIP]
+> **Optimisation** : Contrairement au Java, le code natif peut être optimisé par le compilateur LLVM avec des flags comme `-O3` dans CMake pour des calculs intensifs.
+
+---
+**Développeur :** Mahmoud
+**Location :** Université / Lab de Développement Mobile
+**Date :** 2026-03-24
