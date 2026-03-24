@@ -131,5 +131,5 @@ Organisation modulaire respectant les standards NDK/CMake.
 
 ---
 **Développeur :** Mahmoud
-**Location :** Université / Lab de Développement Mobile
+
 **Date :** 2026-03-24
