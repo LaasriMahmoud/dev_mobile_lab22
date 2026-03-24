@@ -1,0 +1,1 @@
+C:\Users\Mahmoud\Desktop\bug-bounty\JNIDemo_Basics\app\src\main\cpp\CMakeLists.txt

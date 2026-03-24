@@ -1,0 +1,7 @@
+R_DEF: Internal format may change without notice
+local
+id tvArray
+id tvFact
+id tvHello
+id tvReverse
+layout activity_main
